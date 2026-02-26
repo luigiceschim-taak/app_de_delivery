@@ -1,7 +1,7 @@
 public with sharing class Produto {
 
-    String nome{get; private set;}
-    Decimal preco{get; private set;}
+    public String nome{get; private set;}
+    public Decimal preco{get; private set;}
     
     public Produto() {
 

@@ -8,6 +8,4 @@ System.debug(p2);
 
 Restaurante r = new Restaurante('Restaurante do Zé', 'rua dos santos', CategoriaRestaurante.LANCHONETE);
 
-r.cardapio.add(p1);
-r.cardapio.add(p2);
-System.debug(r);
+System.debug(r.cardapio);

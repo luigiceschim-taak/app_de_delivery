@@ -1,9 +1,9 @@
 public with sharing class Cliente {
 
-    private String nome{get; private set;}
-    private String endereco{get;private set;}
-    private String telefone{get;private set;}
-    private String cpf{get;private set;}
+    public String nome{get; private set;}
+    public String endereco{get;private set;}
+    public String telefone{get;private set;}
+    public String cpf{get;private set;}
 
 
     public Cliente() {

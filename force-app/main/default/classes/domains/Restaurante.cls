@@ -1,8 +1,8 @@
 public with sharing class Restaurante {
 
-    String nome{get; private set;}
-    String endereco{get; private set;}
-    CategoriaRestaurante categoria{get; private set;}
+    public String nome{get; private set;}
+    public String endereco{get; private set;}
+    public CategoriaRestaurante categoria{get; private set;}
     
     public List<Produto> cardapio{get; private set;}
     
@@ -16,4 +16,7 @@ public with sharing class Restaurante {
         this.categoria = categoria;
         this.cardapio = new List<Produto>();
     }
+
+    
+
 }
