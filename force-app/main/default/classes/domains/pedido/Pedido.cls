@@ -19,6 +19,11 @@ public with sharing class Pedido extends EntidadeBase{
 
         invariantesObrigatorias(produto, quantidade);
 
+        if(status != StatusPedido.CARRINHO){
+            System.debug('Não é possível adicionar itens a um pedido que não esteja no carrinho.');
+            return;
+        }
+
         if(restaurante.buscarProdutos(produto.nome).isEmpty()){
             System.debug('Produto ' + produto.nome + ' não disponível no restaurante ' + restaurante.nome);
             return;
@@ -28,6 +33,11 @@ public with sharing class Pedido extends EntidadeBase{
     }
     
     public void removerItemPedido(Produto produto) {
+        if(status != StatusPedido.CARRINHO){
+            System.debug('Não é possível remover itens de um pedido que não esteja no carrinho.');
+            return;
+        }
+
         if(itens.containsKey(produto.nome)){
             itens.remove(produto.nome);
             calcularTotal();
@@ -38,6 +48,10 @@ public with sharing class Pedido extends EntidadeBase{
     }
 
     public void alterarQuantidadeItemPedido(Produto produto, Integer novaQuantidade) {
+        if(status != StatusPedido.CARRINHO){
+            System.debug('Não é possível alterar a quantidade de itens de um pedido que não esteja no carrinho.');
+            return;
+        }
         if(itens.containsKey(produto.nome)) {
             itens.get(produto.nome).alterarQuantidade(novaQuantidade); 
             calcularTotal();

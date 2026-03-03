@@ -116,7 +116,11 @@ pedido1.adicionarItemPedido(p, 2);
 
 pedido1.exibirResumo();
 pedido1.confirmarPedido();
+
+pedido1.alterarQuantidadeItemPedido(p, 3);
+pedido1.adicionarItemPedido(p, 2);
 pedido1.exibirResumo();
+
 
 System.debug(pedido1.getItensCopia());
 
