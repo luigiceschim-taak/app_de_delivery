@@ -52,6 +52,8 @@ public with sharing class Pedido extends EntidadeBase{
             System.debug('Não é possível alterar a quantidade de itens de um pedido que não esteja no carrinho.');
             return;
         }
+        invariantesObrigatorias(produto, novaQuantidade);
+        
         if(itens.containsKey(produto.nome)) {
             itens.get(produto.nome).alterarQuantidade(novaQuantidade); 
             calcularTotal();
