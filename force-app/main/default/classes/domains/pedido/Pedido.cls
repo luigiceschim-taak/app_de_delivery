@@ -25,7 +25,28 @@ public with sharing class Pedido extends EntidadeBase{
         }
 
         adicionarNovoItem(produto, quantidade);  
-    }    
+    }
+    
+    public void removerItemPedido(Produto produto) {
+        if(itens.containsKey(produto.nome)){
+            itens.remove(produto.nome);
+            calcularTotal();
+            System.debug('Item removido do pedido.');
+        } else {
+            System.debug('Produto ' + produto.nome + ' não encontrado no pedido.');
+        }
+    }
+
+    public void alterarQuantidadeItemPedido(Produto produto, Integer novaQuantidade) {
+        if(itens.containsKey(produto.nome)) {
+            itens.get(produto.nome).alterarQuantidade(novaQuantidade); 
+            calcularTotal();
+        }
+        else {
+            System.debug('Produto ' + produto.nome + ' não encontrado no pedido.');
+        }
+    }
+
 
     public void confirmarPedido() {
         if(status != StatusPedido.CARRINHO || itens.isEmpty()){
@@ -90,16 +111,27 @@ public with sharing class Pedido extends EntidadeBase{
             this.subtotal = calcularSubtotal();
         }
 
-        public Dinheiro calcularSubtotal() {
+        private Dinheiro calcularSubtotal() {
             return new Dinheiro(produto.preco * quantidade);
         }
 
-        public void adicionarQuantidade(Integer novaQuantidade) {
-            if(novaQuantidade != null){
+        private void adicionarQuantidade(Integer novaQuantidade) {
+            if(novaQuantidade != null && novaQuantidade > 0){
             this.quantidade += novaQuantidade;
             this.subtotal = calcularSubtotal();
-            } 
+            } else {
+                System.debug('Quantidade inválida para adição. A quantidade deve ser maior que zero.');
+            }
         }  
+
+        private void alterarQuantidade(Integer novaQuantidade) {
+            if(novaQuantidade != null && novaQuantidade > 0){
+                this.quantidade = novaQuantidade;
+                this.subtotal = calcularSubtotal();
+            } else {
+                System.debug('Quantidade inválida para alteração. A quantidade deve ser maior que zero.');
+            }
+        }
     }
 }
 

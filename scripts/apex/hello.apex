@@ -108,6 +108,7 @@ String cidade = 'São Paulo';
 Endereco endereco = new Endereco(logradouro, numero, cidade);
 
 Cliente c = new Cliente('Ana', endereco, '(11)99999-9999', cpf);
+System.debug(c);
 base.adicionarProduto(p);
 
 Pedido pedido1 = new Pedido(c, base);
