@@ -1,14 +1,14 @@
 public with sharing class Produto {
 
     public String nome{get; private set;}
-    public Decimal preco{get; private set;}
-    
-    public Produto() {
+    public Dinheiro preco{get; private set;}
+    private PoliticaDePreco politicaDePreco;
 
-    }
 
-    public Produto(String nome, Decimal preco) {
+    public Produto(String nome, Dinheiro preco, PoliticaDePreco politicaDePreco) {
         this.nome = nome;
-        this.preco = preco;
+        this.politicaDePreco = politicaDePreco;
+        this.preco = politicaDePreco.calcularPreco(this);
     }
+    
 }
