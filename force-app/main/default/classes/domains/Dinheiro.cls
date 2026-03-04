@@ -1,5 +1,5 @@
 public with sharing class Dinheiro {
-    Decimal valor{get; private set;}
+    public Decimal valor{get; private set;}
 
     public Dinheiro(Decimal valor) {
         validarNegativo(valor);
