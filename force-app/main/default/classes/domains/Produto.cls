@@ -12,7 +12,7 @@ public with sharing class Produto {
     }
     
 
-    public Dinheiro calcularPreco() {
+    public Dinheiro calcularPrecoFinal() {
         return politicaDePreco.calcularPreco(this);
     }
 }

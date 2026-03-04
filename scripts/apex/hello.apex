@@ -6,5 +6,5 @@ PoliticaDePreco minhaPolitica = new PrecoPromocionalPorHorario();
 
 Produto meuProduto = new Produto('Produto A', precoInicial, minhaPolitica);
 System.debug(meuProduto);
-System.debug('Preço calculado: ' + meuProduto.calcularPreco());
+System.debug('Preço calculado: ' + meuProduto.calcularPrecoFinal());
 

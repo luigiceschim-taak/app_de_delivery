@@ -29,7 +29,7 @@ public with sharing class RelatorioService {
         Map<Produto, Integer> relatorio = new Map<Produto, Integer>();
 
         for (Pedido pedido : pedidos) {
-            for(ItemPedido item : pedido.itens){
+            for(ItemPedido item : pedido.i){
                 Integer quantidadeAtual = relatorio.containsKey(item.produto) ? relatorio.get(item.produto) : 0;
                 relatorio.put(item.produto, quantidadeAtual + item.quantidade);  
             }

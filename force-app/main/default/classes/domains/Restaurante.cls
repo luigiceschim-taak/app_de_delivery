@@ -39,7 +39,7 @@ public with sharing class Restaurante {
         System.debug('Cardápio do restaurante ' + nome + ':');
         Integer counter = 1;
         for (Produto p : cardapio) {
-            System.debug(counter + ' - ' + p.nome + ' R$' + p.preco);
+            System.debug(counter + ' - ' + p.nome + ' R$' + p.precoBase);
             counter++;
         }
     }
@@ -49,7 +49,7 @@ public with sharing class Restaurante {
         for (Produto p : cardapio) {
             if (p.nome.containsIgnoreCase(termoBusca)) {
                 resultados.add(p);
-                System.debug(p.nome + ' – R$' + p.preco.setScale(2));
+                System.debug(p.nome + ' – R$' + p.precoBase.valor.setScale(2));
             }
         }
         if(resultados.isEmpty()){

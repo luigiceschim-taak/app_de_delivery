@@ -90,7 +90,7 @@ public with sharing class Pedido extends EntidadeBase{
 
     private void invariantesObrigatorias(Produto p, Integer quantidade ){
         if(p.nome == null) throw new IllegalArgumentException('Produto sem nome.');
-        if(p.preco == null || p.preco <= 0) throw new IllegalArgumentException('Produto com preço inválido.');
+        if(p.precoBase.valor == null || p.precoBase.valor <= 0) throw new IllegalArgumentException('Produto com preço inválido.');
         if(quantidade == null || quantidade <= 0) throw new IllegalArgumentException('Quantidade inválida para um item do pedido.');
     }
 
@@ -128,7 +128,8 @@ public with sharing class Pedido extends EntidadeBase{
         }
 
         private Dinheiro calcularSubtotal() {
-            return new Dinheiro(produto.preco * quantidade);
+            Dinheiro precoFinal = produto.calcularPrecoFinal();
+            return new Dinheiro(precoFinal.valor * quantidade);
         }
 
         private void adicionarQuantidade(Integer novaQuantidade) {
