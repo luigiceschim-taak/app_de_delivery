@@ -4,7 +4,7 @@ public with sharing class PoliticaPrecoComDescontoPercentual implements Politica
     }
 
     public Dinheiro calcularPreco(Produto produto) {
-        Decimal valorComDesconto = produto.precoBase.valor * (1 - 10 / 100);
+        Decimal valorComDesconto = produto.precoBase.valor * 0.8; // 20% de desconto
         return new Dinheiro(valorComDesconto);
     }
 

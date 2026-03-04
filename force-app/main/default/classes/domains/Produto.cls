@@ -5,9 +5,9 @@ public with sharing class Produto {
     private PoliticaDePreco politicaDePreco;
 
 
-    public Produto(String nome, Dinheiro precoBase, PoliticaDePreco politicaDePreco) {
+    public Produto(String nome, Dinheiro precoBase) {
         this.nome = nome;
-        this.politicaDePreco = politicaDePreco;
+        this.politicaDePreco = new PoliticaPrecoPadrao();
         this.precoBase = precoBase;
     }
     

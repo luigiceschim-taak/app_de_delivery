@@ -15,7 +15,7 @@ public with sharing class Pedido extends EntidadeBase{
         this.total = new Dinheiro(0.0);
     }
 
-    public void adicionarItemPedido(Produto produto, Integer quantidade) {
+    public void adicionarItemPedido(Produto produto, Integer quantidade, PoliticaDePreco politicaDePreco) {
 
         invariantesObrigatorias(produto, quantidade);
 
@@ -29,7 +29,7 @@ public with sharing class Pedido extends EntidadeBase{
             return;
         }
 
-        adicionarNovoItem(produto, quantidade);  
+        adicionarNovoItem(produto, quantidade, politicaDePreco);  
     }
     
     public void removerItemPedido(Produto produto) {
@@ -103,9 +103,14 @@ public with sharing class Pedido extends EntidadeBase{
 		this.total = acumulado;
 	}
     
-    private void adicionarNovoItem(Produto produto, Integer quantidade){
-        if(!itens.containsKey(produto.nome)) itens.put(produto.nome, new ItemPedido(produto, 0));
-        itens.get(produto.nome).adicionarQuantidade(quantidade);
+    private void adicionarNovoItem(Produto produto, Integer quantidade, PoliticaDePreco politicaDePreco){
+        Dinheiro precoUnitario = politicaDePreco.calcularPreco(produto);
+        
+        if(!itens.containsKey(produto.nome)) itens.put(produto.nome, new ItemPedido(produto, 0, precoUnitario ));
+        ItemPedido item = itens.get(produto.nome);
+        item.adicionarQuantidade(quantidade);
+        item.atualizarPrecoUnitario(precoUnitario);
+       
         calcularTotal();
     }
 
@@ -120,16 +125,22 @@ public with sharing class Pedido extends EntidadeBase{
         public Produto produto{get; private set;}
         public Integer quantidade{get; private set;}
         public Dinheiro subtotal{get; private set;}
+        public Dinheiro precoUnitario{get; private set;}
 
-        private ItemPedido(Produto produto, Integer quantidade) {
+        private ItemPedido(Produto produto, Integer quantidade, Dinheiro precoUnitario) {
             this.produto = produto;
             this.quantidade = quantidade;
+            this.precoUnitario = precoUnitario;
             this.subtotal = calcularSubtotal();
         }
 
         private Dinheiro calcularSubtotal() {
-            Dinheiro precoFinal = produto.calcularPrecoFinal();
-            return new Dinheiro(precoFinal.valor * quantidade);
+            return new Dinheiro(this.precoUnitario.valor * quantidade);
+        }
+
+        private void atualizarPrecoUnitario(Dinheiro novoPreco) {
+            this.precoUnitario = new Dinheiro(novoPreco.valor);
+            this.subtotal = calcularSubtotal();
         }
 
         private void adicionarQuantidade(Integer novaQuantidade) {
