@@ -3,6 +3,7 @@ public with sharing class Pedido extends EntidadeBase{
     public Restaurante restaurante{get; private set;}
     private Map<String, ItemPedido> itens{get; private set;}
     public StatusPedido status{get; private set;}
+    public Dinheiro frete{get; private set;}
     public Dinheiro total{get; private set;}
 
 
@@ -12,7 +13,15 @@ public with sharing class Pedido extends EntidadeBase{
         this.restaurante = restaurante;
         this.itens = new Map<String, ItemPedido>();
         this.status = StatusPedido.CARRINHO;
+        this.frete = new Dinheiro(0.0);
         this.total = new Dinheiro(0.0);
+    }
+
+    public void aplicarFrete(Dinheiro frete){
+        this.frete = frete;
+        this.total = this.total.somar(this.frete);
+        System.debug('Frete aplicado: R$' + frete);
+
     }
 
     public void adicionarItemPedido(Produto produto, Integer quantidade, PoliticaDePreco politicaDePreco) {

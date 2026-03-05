@@ -1,12 +1,17 @@
 public with sharing class ProcessadorPedido {
-    public ProcessadorPedido() {
+    private PoliticaDeFrete regraDeFrete;
+    
+    public ProcessadorPedido(PoliticaDeFrete frete) {
+        this.regraDeFrete = frete;
 
     }
+
+    
 
     public void confirmarPedido(Pedido p) {
         validarEstadoParaAlteracao(p);
         
-       
+        calcularFrete(p);
         p.alterarStatus(StatusPedido.EM_PROCESSAMENTO);
     }
 
@@ -39,6 +44,12 @@ public with sharing class ProcessadorPedido {
     public void adicionarQuantidadeItemPedido(Pedido p,Produto produto, Integer novaQuantidade){
         invariantesObrigatorias(produto, novaQuantidade);
         p.adicionarQuantidadeItemPedido(produto, novaQuantidade);
+    }
+
+    private void calcularFrete(Pedido p){
+       Dinheiro freteCalculado = regraDeFrete.calcularFrete(p);
+
+       p.aplicarFrete(freteCalculado);
     }
 
     private void validarEstadoParaAlteracao(Pedido p){
