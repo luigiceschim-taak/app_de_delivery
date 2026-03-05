@@ -9,16 +9,28 @@ public with sharing class ProcessadorPedido {
     
 
     public void confirmarPedido(Pedido p) {
-        validarEstadoParaAlteracao(p);
+        validarEstadoParaProcessarPedido(p);
         
         calcularFrete(p);
         p.alterarStatus(StatusPedido.EM_PROCESSAMENTO);
     }
 
     public void cancelarPedido(Pedido p){
-        validarEstadoParaAlteracao(p);
+        if(p.status != StatusPedido.EM_PROCESSAMENTO || p.status != StatusPedido.CARRINHO){
+            System.debug('Pedido nao pode ser cancelado, pois ele nao esta em processamento');
+            return;
+        }
         
         p.alterarStatus(StatusPedido.CANCELADO);
+    }
+    public void pedidoEntregue(Pedido p){
+        if(p.status != StatusPedido.EM_PROCESSAMENTO){
+            System.debug('Pedido nao pode ser entregue, pois ele nao esta em processamento');
+            return;
+        }
+        
+        p.alterarStatus(StatusPedido.ENTREGUE);
+
     }
 
     public void adicionarPedido(Pedido pedido,Produto produto, Integer quantidade, PoliticaDePreco politicaDePreco){
@@ -52,12 +64,14 @@ public with sharing class ProcessadorPedido {
        p.aplicarFrete(freteCalculado);
     }
 
-    private void validarEstadoParaAlteracao(Pedido p){
+    private void validarEstadoParaProcessarPedido(Pedido p){
          if(p.naoEstaNoCarrinho() || p.estaVazio()){
             System.debug('Não é possível progredir com a ação, pois carrinho ou pedido está vázio');
             return;
         }
     }
+
+
 
     private void validarNaoEstaNoCarrinho(Pedido p){
         if(p.naoEstaNoCarrinho()){
