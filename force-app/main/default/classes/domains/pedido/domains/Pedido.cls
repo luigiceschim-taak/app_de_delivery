@@ -16,33 +16,26 @@ public with sharing class Pedido extends EntidadeBase{
     }
 
     public void adicionarItemPedido(Produto produto, Integer quantidade, PoliticaDePreco politicaDePreco) {
-        if(status != StatusPedido.CARRINHO){
-            System.debug('Não é possível adicionar itens a um pedido que não esteja no carrinho.');
-            return;
-        }
+        
         adicionarNovoItem(produto, quantidade, politicaDePreco);  
     }
     
     public void removerItemPedido(Produto produto) {
-        if(status != StatusPedido.CARRINHO){
-            System.debug('Não é possível remover itens de um pedido que não esteja no carrinho.');
-            return;
-        }
-
-        if(itens.containsKey(produto.nome)){
-            itens.remove(produto.nome);
-            calcularTotal();
-            System.debug('Item removido do pedido.');
-        } else {
-            System.debug('Produto ' + produto.nome + ' não encontrado no pedido.');
-        }
+        removerItem(produto);
     }
 
     public void alterarQuantidadeItemPedido(Produto produto, Integer novaQuantidade) {
 
-        validarEstadoParaAlteracao();
+        
         
         executarAlteracao(produto, novaQuantidade);
+    }
+
+    public void adicionarQuantidadeItemPedido(Produto produto, Integer novaQuantidade) {
+
+        executarAdicao(produto,novaQuantidade);
+        
+        
     }
 
     public void exibirResumo(){
@@ -61,23 +54,40 @@ public with sharing class Pedido extends EntidadeBase{
         return itens.values();
     }
 
-    public Boolean naoPossuiItens(){
-        return itens.isEmpty();
+    public Boolean estaVazio() {
+        return this.itens.isEmpty();
     }
 
-    public void validarEstadoParaAlteracao(){
-         if(status != StatusPedido.CARRINHO){
-            System.debug('Não é possível alterar a quantidade de itens de um pedido que não esteja no carrinho.');
-            return;
-        }
+    public Boolean naoEstaNoCarrinho(){
+        return status != StatusPedido.CARRINHO;
     }
 
-    public void executarAlteracao(Produto produto, Integer novaQuantidade){
+    private void executarAlteracao(Produto produto, Integer novaQuantidade){
         if(itens.containsKey(produto.nome)) {
             itens.get(produto.nome).alterarQuantidade(novaQuantidade); 
             calcularTotal();
         }
         else {
+            System.debug('Produto ' + produto.nome + ' não encontrado no pedido.');
+        }
+    }
+    
+    private void executarAdicao(Produto produto, Integer novaQuantidade){
+        if(itens.containsKey(produto.nome)) {
+            itens.get(produto.nome).adicionarQuantidade(novaQuantidade);
+            calcularTotal();
+        }
+        else {
+            System.debug('Produto ' + produto.nome + ' não encontrado no pedido.');
+        }
+    }
+
+    private void removerItem(Produto produto){
+        if(itens.containsKey(produto.nome)){
+            itens.remove(produto.nome);
+            calcularTotal();
+            System.debug('Item removido do pedido.');
+        } else {
             System.debug('Produto ' + produto.nome + ' não encontrado no pedido.');
         }
     }
