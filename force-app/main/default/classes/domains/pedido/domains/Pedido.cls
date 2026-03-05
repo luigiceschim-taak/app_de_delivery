@@ -16,19 +16,10 @@ public with sharing class Pedido extends EntidadeBase{
     }
 
     public void adicionarItemPedido(Produto produto, Integer quantidade, PoliticaDePreco politicaDePreco) {
-
-        invariantesObrigatorias(produto, quantidade);
-
         if(status != StatusPedido.CARRINHO){
             System.debug('Não é possível adicionar itens a um pedido que não esteja no carrinho.');
             return;
         }
-
-        if(restaurante.buscarProdutos(produto.nome).isEmpty()){
-            System.debug('Produto ' + produto.nome + ' não disponível no restaurante ' + restaurante.nome);
-            return;
-        }
-
         adicionarNovoItem(produto, quantidade, politicaDePreco);  
     }
     
@@ -48,28 +39,10 @@ public with sharing class Pedido extends EntidadeBase{
     }
 
     public void alterarQuantidadeItemPedido(Produto produto, Integer novaQuantidade) {
-        if(status != StatusPedido.CARRINHO){
-            System.debug('Não é possível alterar a quantidade de itens de um pedido que não esteja no carrinho.');
-            return;
-        }
-        invariantesObrigatorias(produto, novaQuantidade);
+
+        validarEstadoParaAlteracao();
         
-        if(itens.containsKey(produto.nome)) {
-            itens.get(produto.nome).alterarQuantidade(novaQuantidade); 
-            calcularTotal();
-        }
-        else {
-            System.debug('Produto ' + produto.nome + ' não encontrado no pedido.');
-        }
-    }
-
-
-    public void confirmarPedido() {
-        if(status != StatusPedido.CARRINHO || itens.isEmpty()){
-            System.debug('Não é possível confirmar um pedido sem itens ou com status diferente de carrinho.');
-            return;
-        }
-        alterarStatus(StatusPedido.EM_PROCESSAMENTO);
+        executarAlteracao(produto, novaQuantidade);
     }
 
     public void exibirResumo(){
@@ -88,12 +61,26 @@ public with sharing class Pedido extends EntidadeBase{
         return itens.values();
     }
 
-    private void invariantesObrigatorias(Produto p, Integer quantidade ){
-        if(p.nome == null) throw new IllegalArgumentException('Produto sem nome.');
-        if(p.precoBase.valor == null || p.precoBase.valor <= 0) throw new IllegalArgumentException('Produto com preço inválido.');
-        if(quantidade == null || quantidade <= 0) throw new IllegalArgumentException('Quantidade inválida para um item do pedido.');
+    public Boolean naoPossuiItens(){
+        return itens.isEmpty();
     }
 
+    public void validarEstadoParaAlteracao(){
+         if(status != StatusPedido.CARRINHO){
+            System.debug('Não é possível alterar a quantidade de itens de um pedido que não esteja no carrinho.');
+            return;
+        }
+    }
+
+    public void executarAlteracao(Produto produto, Integer novaQuantidade){
+        if(itens.containsKey(produto.nome)) {
+            itens.get(produto.nome).alterarQuantidade(novaQuantidade); 
+            calcularTotal();
+        }
+        else {
+            System.debug('Produto ' + produto.nome + ' não encontrado no pedido.');
+        }
+    }
 
 	private void calcularTotal(){
 		Dinheiro acumulado = new Dinheiro(0.0);
@@ -116,10 +103,11 @@ public with sharing class Pedido extends EntidadeBase{
 
     
 
-    private void alterarStatus(StatusPedido novoStatus) {
+    public void alterarStatus(StatusPedido novoStatus) {
         this.status = novoStatus;
         System.debug('Status do pedido atualizado para: ' + novoStatus);
     }
+    
 
     public class ItemPedido {
         public Produto produto{get; private set;}
