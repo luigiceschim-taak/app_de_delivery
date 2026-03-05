@@ -20,7 +20,7 @@ Pedido p1 = new Pedido(c1,base);
 
 p1.adicionarItemPedido(mussarela, 2, new PoliticaPrecoComDescontoPercentual());
 p1.adicionarItemPedido(mussarela, 1, new PrecoPromocionalPorHorario());
-p1.adicionarItemPedido(produto, quantidade, politicaDePreco)
 
 
 System.debug(p1.getItensCopia());
+System.debug(p1);
