@@ -2,7 +2,7 @@ public with sharing class Pedido extends EntidadeBase{
     public Cliente cliente{get; private set;}
     public Restaurante restaurante{get; private set;}
     private Map<String, ItemPedido> itens{get; private set;}
-    public StatusPedido status{get; private set;}
+    private EstadoPedido status{get; private set;}
     public Dinheiro frete{get; private set;}
     public Dinheiro total{get; private set;}
 
@@ -12,7 +12,7 @@ public with sharing class Pedido extends EntidadeBase{
         this.cliente = cliente;
         this.restaurante = restaurante;
         this.itens = new Map<String, ItemPedido>();
-        this.status = StatusPedido.CARRINHO;
+        this.status = new EstadoCarrinho();
         this.frete = new Dinheiro(0.0);
         this.total = new Dinheiro(0.0);
     }
@@ -26,11 +26,11 @@ public with sharing class Pedido extends EntidadeBase{
 
     public void adicionarItemPedido(Produto produto, Integer quantidade, PoliticaDePreco politicaDePreco) {
         
-        adicionarNovoItem(produto, quantidade, politicaDePreco);  
+        this.status.adicionarProduto(this, produto, quantidade, politicaDepreco);  
     }
     
     public void removerItemPedido(Produto produto) {
-        removerItem(produto);
+        this.status.removerProduto(this, produto);
     }
 
     public void alterarQuantidadeItemPedido(Produto produto, Integer novaQuantidade) {
@@ -46,6 +46,22 @@ public with sharing class Pedido extends EntidadeBase{
         
         
     }
+    public void confirmarPedido(){
+        this.status.confirmar(this);
+        
+    }
+    public void cancelarPedido(){
+        this.status.cancelar(this);
+        
+    }
+    public void entregue(){
+        this.status.marcarComoEntregue(this);
+        
+    }
+
+    
+
+    
 
     public void exibirResumo(){
         System.debug('Resumo do pedido:');
@@ -67,9 +83,6 @@ public with sharing class Pedido extends EntidadeBase{
         return this.itens.isEmpty();
     }
 
-    public Boolean naoEstaNoCarrinho(){
-        return status != StatusPedido.CARRINHO;
-    }
 
     private void executarAlteracao(Produto produto, Integer novaQuantidade){
         if(itens.containsKey(produto.nome)) {
@@ -119,13 +132,20 @@ public with sharing class Pedido extends EntidadeBase{
        
         calcularTotal();
     }
+    
+    private void confirmarPedidoPrivado(EstadoPedido estado){
+        this.status = estado;
+    }
+    private void cancelarPedidoPrivado(EstadoPedido estado){
+        this.status = estado;
+    }
+    private void marcarEntregue(EstadoPedido estado){
+        this.status = estado;
+    }
 
     
 
-    public void alterarStatus(StatusPedido novoStatus) {
-        this.status = novoStatus;
-        System.debug('Status do pedido atualizado para: ' + novoStatus);
-    }
+    
     
 
     public class ItemPedido {
@@ -168,5 +188,119 @@ public with sharing class Pedido extends EntidadeBase{
             }
         }
     }
+
+
+    // poderia ser virtual para evitar escrever erros tempo todo
+    public abstract with sharing class EstadoPedido {
+        public EstadoPedido() {
+
+        }
+
+        public abstract void adicionarProduto(Pedido p,Produto produto, Integer quantidade, PoliticaDePreco politicaDepreco);
+            
+            
+
+        
+        public abstract void removerProduto(Pedido p,Produto produto);
+
+        
+
+        public abstract void confirmar(Pedido p);
+
+        
+        public abstract void cancelar(Pedido p);
+
+        public abstract void marcarComoEntregue(Pedido p);
+    }
+
+    public class EstadoCarrinho extends EstadoPedido{
+        public override void adicionarProduto(Pedido p,Produto produto, Integer quantidade, PoliticaDePreco politicaDepreco){
+            p.adicionarNovoItem(produto, quantidade, politicaDePreco);
+        }
+        public override void removerProduto(Pedido p, Produto produto){
+            p.removerItem(produto);
+
+        }
+        public override void confirmar(Pedido p){
+            p.confirmarPedidoPrivado(new EstadoEmProcessamento());
+
+        }
+        public override void cancelar(Pedido p){
+            p.cancelarPedidoPrivado(new EstadoCancelado());
+        }
+        public override void marcarComoEntregue(Pedido p){
+            throw new IllegalArgumentException('nao pode');
+        }
+
+    }
+    public class EstadoEmProcessamento extends EstadoPedido{
+        public override void adicionarProduto(Pedido p,Produto produto, Integer quantidade, PoliticaDePreco politicaDepreco){
+            throw new IllegalArgumentException('nao pode');
+
+        }
+        public override void removerProduto(Pedido p, Produto produto){
+            throw new IllegalArgumentException('nao pode');
+            
+
+        }
+        public override void confirmar(Pedido p){
+            throw new IllegalArgumentException('nao pode');
+
+        }
+        public override void cancelar(Pedido p){
+            p.cancelarPedidoPrivado(new EstadoCancelado());
+        }
+        public override void marcarComoEntregue(Pedido p){
+            p.marcarEntregue(new EstadoEntregue());
+        }
+    }
+    public class EstadoCancelado extends EstadoPedido{
+        public override void adicionarProduto(Pedido p,Produto produto, Integer quantidade, PoliticaDePreco politicaDepreco){
+            throw new IllegalArgumentException('nao pode');
+
+        }
+        public override void removerProduto(Pedido p, Produto produto){
+            throw new IllegalArgumentException('nao pode');
+            
+
+        }
+        public override void confirmar(Pedido p){
+            throw new IllegalArgumentException('nao pode');
+            
+
+        }
+        public override void cancelar(Pedido p){
+            throw new IllegalArgumentException('nao pode');
+            
+        }
+        public override void marcarComoEntregue(Pedido p){
+            throw new IllegalArgumentException(' nao pode');
+        }
+    }
+    public class EstadoEntregue extends EstadoPedido{
+        public override void adicionarProduto(Pedido p,Produto produto, Integer quantidade, PoliticaDePreco politicaDepreco){
+            throw new IllegalArgumentException('nao pode');
+
+        }
+        public override void removerProduto(Pedido p, Produto produto){
+            throw new IllegalArgumentException('nao pode');
+            
+
+        }
+        public override void confirmar(Pedido p){
+            throw new IllegalArgumentException('nao pode');
+            
+
+        }
+        public override void cancelar(Pedido p){
+            throw new IllegalArgumentException('nao pode');
+            
+        }
+        public override void marcarComoEntregue(Pedido p){
+            throw new IllegalArgumentException(' nao pode');
+        }
+    }
+
+    
 }
 

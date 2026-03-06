@@ -3,7 +3,6 @@ public with sharing class ProcessadorPedido {
     
     public ProcessadorPedido(PoliticaDeFrete frete) {
         this.regraDeFrete = frete;
-
     }
 
     
@@ -12,34 +11,23 @@ public with sharing class ProcessadorPedido {
         validarEstadoParaProcessarPedido(p);
         
         calcularFrete(p);
-        p.alterarStatus(StatusPedido.EM_PROCESSAMENTO);
+        p.confirmarPedido();
+        
     }
 
     public void cancelarPedido(Pedido p){
-        if(p.status != StatusPedido.EM_PROCESSAMENTO || p.status != StatusPedido.CARRINHO){
-            System.debug('Pedido nao pode ser cancelado, pois ele nao esta em processamento');
-            return;
-        }
-        
-        p.alterarStatus(StatusPedido.CANCELADO);
+        p.cancelarPedido(); 
     }
     public void pedidoEntregue(Pedido p){
-        if(p.status != StatusPedido.EM_PROCESSAMENTO){
-            System.debug('Pedido nao pode ser entregue, pois ele nao esta em processamento');
-            return;
-        }
-        
-        p.alterarStatus(StatusPedido.ENTREGUE);
-
+        p.entregue();
     }
 
     public void adicionarPedido(Pedido pedido,Produto produto, Integer quantidade, PoliticaDePreco politicaDePreco){
         buscarProdutoEmRestaurante(pedido, produto);
         invariantesObrigatorias(produto, quantidade);
         
-        validarNaoEstaNoCarrinho(pedido);
 
-        pedido.adicionarItemPedido(produto, quantidade, politicaDePreco); 
+        pedido.adicionarItemPedido(produto, quantidade, politicaDePreco);
     }
 
     public void removerPedido(Pedido pedido, Produto produto){
@@ -65,18 +53,9 @@ public with sharing class ProcessadorPedido {
     }
 
     private void validarEstadoParaProcessarPedido(Pedido p){
-         if(p.naoEstaNoCarrinho() || p.estaVazio()){
-            System.debug('Não é possível progredir com a ação, pois carrinho ou pedido está vázio');
-            return;
-        }
-    }
-
-
-
-    private void validarNaoEstaNoCarrinho(Pedido p){
-        if(p.naoEstaNoCarrinho()){
-            System.debug('Não é possível progredir com a ação, pedido não está no carrinho');
-            return;
+         if(p.estaVazio()){
+            System.debug('Não é possível progredir com a ação, pois pedido está vázio');
+            throw new IllegalArgumentException('Carrinho esta vazio');
         }
     }
 
