@@ -1,4 +1,4 @@
-public with sharing class Pedido extends EntidadeBase{
+public with sharing class Pedido extends EntidadeBase implements IPedidoAcoes{
     public Cliente cliente{get; private set;}
     public Restaurante restaurante{get; private set;}
     private Map<String, ItemPedido> itens{get; private set;}
@@ -46,11 +46,11 @@ public with sharing class Pedido extends EntidadeBase{
         
         
     }
-    public void confirmarPedido(){
+    public void confirmarPedido(EstadoPedido estado){
         this.status.confirmar(this);
         
     }
-    public void cancelarPedido(){
+    public void cancelarPedido(EstadoPedido estado){
         this.status.cancelar(this);
         
     }
@@ -104,7 +104,7 @@ public with sharing class Pedido extends EntidadeBase{
         }
     }
 
-    private void removerItem(Produto produto){
+    public void removerItem(Produto produto){
         if(itens.containsKey(produto.nome)){
             itens.remove(produto.nome);
             calcularTotal();
@@ -122,7 +122,7 @@ public with sharing class Pedido extends EntidadeBase{
 		this.total = acumulado;
 	}
     
-    private void adicionarNovoItem(Produto produto, Integer quantidade, PoliticaDePreco politicaDePreco){
+    public void adicionarNovoItem(Produto produto, Integer quantidade, PoliticaDePreco politicaDePreco){
         Dinheiro precoUnitario = politicaDePreco.calcularPreco(produto);
         
         if(!itens.containsKey(produto.nome)) itens.put(produto.nome, new ItemPedido(produto, 0, precoUnitario ));
@@ -133,13 +133,13 @@ public with sharing class Pedido extends EntidadeBase{
         calcularTotal();
     }
     
-    private void confirmarPedidoPrivado(EstadoPedido estado){
+    public void confirmarPedidoPrivado(EstadoPedido estado){
         this.status = estado;
     }
-    private void cancelarPedidoPrivado(EstadoPedido estado){
+    public void cancelarPedidoPrivado(EstadoPedido estado){
         this.status = estado;
     }
-    private void marcarEntregue(EstadoPedido estado){
+    public void marcarEntregue(EstadoPedido estado){
         this.status = estado;
     }
 
@@ -148,7 +148,7 @@ public with sharing class Pedido extends EntidadeBase{
     
     
 
-    public class ItemPedido {
+    private class ItemPedido {
         public Produto produto{get; private set;}
         public Integer quantidade{get; private set;}
         public Dinheiro subtotal{get; private set;}
@@ -190,116 +190,7 @@ public with sharing class Pedido extends EntidadeBase{
     }
 
 
-    // poderia ser virtual para evitar escrever erros tempo todo
-    public abstract with sharing class EstadoPedido {
-        public EstadoPedido() {
-
-        }
-
-        public abstract void adicionarProduto(Pedido p,Produto produto, Integer quantidade, PoliticaDePreco politicaDepreco);
-            
-            
-
-        
-        public abstract void removerProduto(Pedido p,Produto produto);
-
-        
-
-        public abstract void confirmar(Pedido p);
-
-        
-        public abstract void cancelar(Pedido p);
-
-        public abstract void marcarComoEntregue(Pedido p);
-    }
-
-    public class EstadoCarrinho extends EstadoPedido{
-        public override void adicionarProduto(Pedido p,Produto produto, Integer quantidade, PoliticaDePreco politicaDepreco){
-            p.adicionarNovoItem(produto, quantidade, politicaDePreco);
-        }
-        public override void removerProduto(Pedido p, Produto produto){
-            p.removerItem(produto);
-
-        }
-        public override void confirmar(Pedido p){
-            p.confirmarPedidoPrivado(new EstadoEmProcessamento());
-
-        }
-        public override void cancelar(Pedido p){
-            p.cancelarPedidoPrivado(new EstadoCancelado());
-        }
-        public override void marcarComoEntregue(Pedido p){
-            throw new IllegalArgumentException('nao pode');
-        }
-
-    }
-    public class EstadoEmProcessamento extends EstadoPedido{
-        public override void adicionarProduto(Pedido p,Produto produto, Integer quantidade, PoliticaDePreco politicaDepreco){
-            throw new IllegalArgumentException('nao pode');
-
-        }
-        public override void removerProduto(Pedido p, Produto produto){
-            throw new IllegalArgumentException('nao pode');
-            
-
-        }
-        public override void confirmar(Pedido p){
-            throw new IllegalArgumentException('nao pode');
-
-        }
-        public override void cancelar(Pedido p){
-            p.cancelarPedidoPrivado(new EstadoCancelado());
-        }
-        public override void marcarComoEntregue(Pedido p){
-            p.marcarEntregue(new EstadoEntregue());
-        }
-    }
-    public class EstadoCancelado extends EstadoPedido{
-        public override void adicionarProduto(Pedido p,Produto produto, Integer quantidade, PoliticaDePreco politicaDepreco){
-            throw new IllegalArgumentException('nao pode');
-
-        }
-        public override void removerProduto(Pedido p, Produto produto){
-            throw new IllegalArgumentException('nao pode');
-            
-
-        }
-        public override void confirmar(Pedido p){
-            throw new IllegalArgumentException('nao pode');
-            
-
-        }
-        public override void cancelar(Pedido p){
-            throw new IllegalArgumentException('nao pode');
-            
-        }
-        public override void marcarComoEntregue(Pedido p){
-            throw new IllegalArgumentException(' nao pode');
-        }
-    }
-    public class EstadoEntregue extends EstadoPedido{
-        public override void adicionarProduto(Pedido p,Produto produto, Integer quantidade, PoliticaDePreco politicaDepreco){
-            throw new IllegalArgumentException('nao pode');
-
-        }
-        public override void removerProduto(Pedido p, Produto produto){
-            throw new IllegalArgumentException('nao pode');
-            
-
-        }
-        public override void confirmar(Pedido p){
-            throw new IllegalArgumentException('nao pode');
-            
-
-        }
-        public override void cancelar(Pedido p){
-            throw new IllegalArgumentException('nao pode');
-            
-        }
-        public override void marcarComoEntregue(Pedido p){
-            throw new IllegalArgumentException(' nao pode');
-        }
-    }
+    
 
     
 }

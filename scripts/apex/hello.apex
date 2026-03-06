@@ -22,7 +22,7 @@ ProcessadorPedido processador = new ProcessadorPedido(new FreteFixo());
 
 processador.adicionarPedido(p1, mussarela, 3, new PoliticaPrecoComDescontoPercentual());
 processador.adicionarPedido(p1, refrigerante, 2, new PoliticaPrecoPadrao());
-
+processador.confirmarPedido(p1);
 processador.confirmarPedido(p1);
 
 
