@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "orgName": "Demo company",
+=======
+  "orgName": "grupotaak company",
+>>>>>>> delivery/main
   "edition": "Developer",
   "features": ["EnableSetPasswordInApi"],
   "settings": {
