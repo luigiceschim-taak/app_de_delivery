@@ -46,11 +46,11 @@ public with sharing class Pedido extends EntidadeBase implements IPedidoAcoes{
         
         
     }
-    public void confirmarPedido(EstadoPedido estado){
+    public void confirmar(){
         this.status.confirmar(this);
         
     }
-    public void cancelarPedido(EstadoPedido estado){
+    public void cancelarPedido(){
         this.status.cancelar(this);
         
     }
@@ -148,7 +148,7 @@ public with sharing class Pedido extends EntidadeBase implements IPedidoAcoes{
     
     
 
-    private class ItemPedido {
+    public class ItemPedido {
         public Produto produto{get; private set;}
         public Integer quantidade{get; private set;}
         public Dinheiro subtotal{get; private set;}

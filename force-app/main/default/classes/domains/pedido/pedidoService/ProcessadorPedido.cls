@@ -11,12 +11,12 @@ public with sharing class ProcessadorPedido {
         validarEstadoParaProcessarPedido(p);
         
         calcularFrete(p);
-        p.confirmarPedido();
+        p.confirmar();
         
     }
 
     public void cancelarPedido(Pedido p){
-        p.cancelarPedido(); 
+        p.cancelarPedido();
     }
     public void pedidoEntregue(Pedido p){
         p.entregue();

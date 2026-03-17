@@ -20,59 +20,57 @@ Diagrama das principais entidades e seus relacionamentos:
 
 ```mermaid
 classDiagram
-    Cliente <|-- Pedido
-    Restaurante <|-- Pedido
-    Pedido "1" o-- "*" ItemPedido
-    ItemPedido "1" o-- "1" Produto
-    Restaurante "1" o-- "*" Produto
-    Restaurante "1" o-- "1" CategoriaRestaurante
-    Pedido "1" o-- "1" StatusPedido
-
-    class Cliente {
-        +String nome
-        +String endereco
-        +String telefone
-        +String cpf
-    }
-    class Restaurante {
-        +String nome
-        +String endereco
-        +CategoriaRestaurante categoria
-        +List<Produto> cardapio
-    }
-    class Produto {
-        +String nome
-        +Decimal preco
-    }
-    class ItemPedido {
-        +Produto produto
-        +Integer quantidade
-        +Decimal subtotal
-    }
-    class Pedido {
-        +Cliente cliente
-        +Restaurante restaurante
-        +List<ItemPedido> itens
-        +StatusPedido status
-        +Decimal total
-    }
-    class CategoriaRestaurante {
-        <<enum>>
-        PIZZARIA
-        LANCHONETE
-        JAPONES
-        HAMBURGUERIA
-        OUTROS
-    }
-    class StatusPedido {
-        <<enum>>
-        CARRINHO
-        EM_PROCESSAMENTO
-        ENTREGUE
-    }
+    EntidadeBase <|-- Pessoa
+    Pessoa <|-- Cliente
+    Cliente o-- Endereco
+    Cliente o-- Documento
+    Restaurante o-- CategoriaRestaurante
+    Restaurante o-- Produto
+    Pedido <|-- EntidadeBase
+    Pedido o-- Cliente
+    Pedido o-- Restaurante
+    Pedido o-- ItemPedido
+    Pedido o-- Dinheiro
+    Pedido o-- EstadoPedido
+    Pedido o-- PoliticaDeFrete
+    Pedido o-- PoliticaDePreco
+    Produto o-- Dinheiro
+    ItemPedido o-- Produto
+    ItemPedido o-- Dinheiro
+    PoliticaDeFrete <|.. FreteFixo
+    PoliticaDeFrete <|.. FreteGratis
+    PoliticaDeFrete <|.. FretePorPercentualDoTotal
+    PoliticaDePreco <|.. PoliticaPrecoPadrao
+    PoliticaDePreco <|.. PoliticaPrecoComDescontoPercentual
+    PoliticaDePreco <|.. PrecoPromocionalPorHorario
+    EstadoPedido <|-- EstadoCarrinho
+    EstadoPedido <|-- EstadoEmProcessamento
+    EstadoPedido <|-- EstadoEntregue
+    EstadoPedido <|-- EstadoCancelado
+    Pedido ..|> IPedidoAcoes
+    EstadoPedido ..|> IPedidoAcoes
 ```
 
 ---
+
+### Resumo e Possíveis Melhorias
+
+O projeto está bem estruturado, utilizando abstrações, interfaces e enums para modelar o domínio de delivery. Os principais pontos positivos são:
+- Uso de herança para entidades base (ex: EntidadeBase, Pessoa, Cliente).
+- Interfaces para políticas de preço e frete, facilitando extensibilidade.
+- Enum para status e categorias, tornando o código mais legível.
+- Classes de estado para o pedido, permitindo controle de fluxo.
+
+Sugestões de melhoria:
+- Centralizar validações e regras de negócio em serviços ou handlers para evitar duplicidade.
+- Adicionar testes unitários para garantir a robustez das regras.
+- Documentar melhor os métodos e fluxos complexos.
+- Considerar uso de patterns como Factory para criação de políticas.
+- Implementar logs e tratamento de exceções mais detalhado.
+- Avaliar possíveis simplificações em métodos de Pedido e EstadoPedido.
+
+---
+
 
 ## Acoplamentos e Análise SOLID
 

@@ -29,7 +29,8 @@ public with sharing class RelatorioService {
         Map<Produto, Integer> relatorio = new Map<Produto, Integer>();
 
         for (Pedido pedido : pedidos) {
-            for(ItemPedido item : pedido.i){
+            for(pedido.ItemPedido item : pedido.getItensCopia()){
+                
                 Integer quantidadeAtual = relatorio.containsKey(item.produto) ? relatorio.get(item.produto) : 0;
                 relatorio.put(item.produto, quantidadeAtual + item.quantidade);  
             }
@@ -56,12 +57,12 @@ public with sharing class RelatorioService {
 
     }
 
-    public static Map<String, List<Pedido>> gerarRelatorioPedidosPorCliente(List<Pedido> pedidos, List<String> cpfs){
-        Map<String, List<Pedido>> relatorio = new Map<String, List<Pedido>>();
+    public static Map<Documento, List<Pedido>> gerarRelatorioPedidosPorCliente(List<Pedido> pedidos, List<Documento> cpfs){
+        Map<Documento, List<Pedido>> relatorio = new Map<Documento, List<Pedido>>();
 
         for(Pedido p : pedidos){
-            for(String cpf : cpfs){
-                if(p.cliente.cpf == cpf) {
+            for(Documento cpf : cpfs){
+                if(p.cliente.documento == cpf) {
                     List<Pedido> pedidosCliente = relatorio.containsKey(cpf) ? relatorio.get(cpf) : new List<Pedido>();
                     pedidosCliente.add(p);
                     relatorio.put(cpf, pedidosCliente);
@@ -71,14 +72,11 @@ public with sharing class RelatorioService {
         }
 
             System.debug('Relatório de pedidos por cliente:');  
-            for(String cpf : relatorio.keySet()){
+            for(Documento cpf : relatorio.keySet()){
                 List<Pedido> pedidosCliente = relatorio.get(cpf);
                 System.debug('CPF: ' + cpf + ' - Total de pedidos: ' + pedidosCliente.size());
-            }
-            return relatorio;
-
-
-        
+                }
+            return relatorio; 
     }
 
 }
